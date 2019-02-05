@@ -1,6 +1,7 @@
 # Roadmap
 
-- [x] Unified Job Config API
+## Core
+- [x] Unify Job Config API
     - [x] Core Config
     - [x] Type Config
     - [x] Root Config
@@ -11,27 +12,28 @@
     - [ ] Http
 - [x] Event Trace
     - [x] Event Publisher
+    - [x] Log Event Listener
     - [x] Database Event Listener
     - [ ] Other Event Listener
-- [ ] Unified Schedule API
-- [ ] Unified Resource API
+
+## Elastic-Job-Lite
 - [x] Distributed Features
     - [x] High Availability
+    - [x] Leadership Election
     - [x] Elastic scale in/out
     - [x] Failover
     - [x] Misfire
     - [x] Idempotency
-    - [x] Reconcile
 - [x] Registry Center
     - [x] Zookeeper
+    - [ ] Health Detection
     - [ ] Other Registry Center Supported
 - [x] Lifecycle Management
     - [x] Add/Remove
     - [x] Pause/Resume
     - [x] Disable/Enable
     - [x] Shutdown
-    - [x] Restful API
-    - [x] Web Console
+    - [ ] Restful API
 - [x] Job Dependency
     - [x] Listener
     - [ ] Workflow
@@ -39,3 +41,46 @@
 - [x] Spring Integrate
     - [x] Namespace
     - [x] Bean Injection
+- [x] Web Console
+
+## Elastic-Job-Cloud
+- [x] Transient Job
+    - [x] High Availability
+    - [x] Elastic scale in/out
+    - [x] Failover
+    - [x] Misfire
+    - [x] Idempotency
+- [x] Daemon Job
+    - [x] High Availability
+    - [x] Elastic scale in/out
+    - [ ] Failover
+    - [ ] Misfire
+    - [x] Idempotency
+- [ ] Mesos Scheduler
+    - [x] Leadership Election
+    - [ ] Redis Based Queue Improvement
+- [ ] Mesos Executor
+    - [x] Executor reuse pool
+    - [ ] Progress Reporting
+    - [ ] Health Detection
+    - [ ] Log Redirect
+- [x] Lifecycle Management
+    - [x] Add/Remove
+    - [ ] Pause/Resume
+    - [ ] Disable/Enable
+    - [ ] Shutdown
+    - [x] Restful API
+- [ ] Job Dependency
+    - [ ] Listener
+    - [ ] Workflow
+    - [ ] DAG
+- [x] Job Distribution
+    - [x] Mesos Based Distribution
+    - [ ] Docker Based Distribution
+- [x] Resource Management
+    - [x] Resources Allocate
+    - [ ] Resources Isolation
+    - [ ] Cross Data Center
+    - [ ] A/B Test
+- [x] Spring Integrate
+- [x] Web Console
