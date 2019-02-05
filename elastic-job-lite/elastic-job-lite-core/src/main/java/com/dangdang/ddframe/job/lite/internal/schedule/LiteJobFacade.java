@@ -185,9 +185,4 @@ public class LiteJobFacade implements JobFacade {
             log.trace(message);
         }
     }
-
-    @Override
-    public boolean clusterOrderIfNecessary() {
-       return  loadJobRootConfiguration(true).isClusterOrder() && executionService.clusterOrderIfNecessary();
-    }
 }

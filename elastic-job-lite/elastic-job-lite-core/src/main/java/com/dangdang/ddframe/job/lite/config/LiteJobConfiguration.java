@@ -49,8 +49,6 @@ public class LiteJobConfiguration implements JobRootConfiguration {
     private final boolean overwrite;
     
     private final int reconcileIntervalMinutes;
-
-    private final boolean clusterOrder;
     
     /**
      * 获取作业名称.
@@ -98,8 +96,6 @@ public class LiteJobConfiguration implements JobRootConfiguration {
         private boolean overwrite;
         
         private int reconcileIntervalMinutes = -1;
-
-        private boolean clusterOrder = false;
         
         /**
          * 设置监控作业执行时状态.
@@ -212,22 +208,6 @@ public class LiteJobConfiguration implements JobRootConfiguration {
             this.reconcileIntervalMinutes = reconcileIntervalMinutes;
             return this;
         }
-
-        /**
-         * 设置作业是否需要全局顺序
-         *
-         * <p>
-         *   如果整个集群中此任务的前一次触发还没有执行完，那么后续不能触发。
-         * </p>
-         *
-         * @param clusterOrder 是否需要全局顺序
-         *
-         * @return lite作业配置构建器
-         */
-        public Builder clusterOrdeer(final boolean clusterOrder){
-            this.clusterOrder = clusterOrder;
-            return this;
-        }
         
         /**
          * 构建作业配置对象.
@@ -235,7 +215,7 @@ public class LiteJobConfiguration implements JobRootConfiguration {
          * @return 作业配置对象
          */
         public final LiteJobConfiguration build() {
-            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, disabled, overwrite, reconcileIntervalMinutes,clusterOrder);
+            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, disabled, overwrite, reconcileIntervalMinutes);
         }
     }
 }
