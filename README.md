@@ -1,14 +1,18 @@
-##Elastic-Job - distributed scheduled job solution
+# Elastic-Job - distributed scheduled job solution
 
-# [中文主页](README_cn.md) 
-  
-# [原1.x版本文档](README_1.x.md)
-
-[![Build Status](https://secure.travis-ci.org/dangdangdotcom/elastic-job.png?branch=master)](https://travis-ci.org/dangdangdotcom/elastic-job)
+[![Build Status](https://secure.travis-ci.org/elasticjob/elastic-job.png?branch=master)](https://travis-ci.org/elasticjob/elastic-job)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/elastic-job/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/elastic-job)
-[![Coverage Status](https://coveralls.io/repos/dangdangdotcom/elastic-job/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/elastic-job?branch=master)
-[![GitHub release](https://img.shields.io/github/release/dangdangdotcom/elastic-job.svg)](https://github.com/dangdangdotcom/elastic-job/releases)
-[![Hex.pm](http://dangdangdotcom.github.io/elastic-job/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Coverage Status](https://coveralls.io/repos/elasticjob/elastic-job/badge.svg?branch=master&service=github)](https://coveralls.io/github/elasticjob/elastic-job?branch=master)
+[![GitHub release](https://img.shields.io/github/release/elasticjob/elastic-job.svg)](https://github.com/elasticjob/elastic-job/releases)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+
+# [Homepage](http://elasticjob.io/)
+
+# [中文主页](http://elasticjob.io/index_zh.html)
+
+# Elastic-Job-Lite Console [![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://elasticjob.io/dist/elastic-job-lite-console-2.1.5.tar.gz)
+
+# Elastic-Job-Cloud Framework[![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://elasticjob.io/dist/elastic-job-cloud-scheduler-2.1.5.tar.gz)
 
 # Overview
 
@@ -28,6 +32,7 @@ Elastic-Job-Lite and Elastic-Job-Cloud provide unified API. Developers only need
 * Failover
 * Misfired jobs refire
 * Sharding consistently, same sharding item for a job only one running instance
+* Self diagnose and recover when distribute environment unstable
 * Parallel scheduling supported
 * Job lifecycle operation
 * Lavish job types
@@ -40,22 +45,21 @@ Elastic-Job-Lite and Elastic-Job-Cloud provide unified API. Developers only need
 * Fenzo based resources allocated elastically
 * Docker based processes isolation support (TBD)
 
-***
-
-# [Roadmap](ROADMAP.md)
-
-# [Release Notes](http://dangdangdotcom.github.io/elastic-job/post/release_notes/)
-
 # Architecture
 
 ## Elastic-Job-Lite
 
-![Elastic-Job-Lite Architecture](elastic-job-doc/content/img/architecture/elastic_job_lite.png)
+![Elastic-Job-Lite Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture/elastic_job_lite.png)
 ***
 
 ## Elastic-Job-Cloud
 
-![Elastic-Job-Cloud Architecture](elastic-job-doc/content/img/architecture/elastic_job_cloud.png)
+![Elastic-Job-Cloud Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture/elastic_job_cloud.png)
+
+
+# [Release Notes](https://github.com/elasticjob/elastic-job/releases)
+
+# [Roadmap](ROADMAP.md)
 
 # Quick Start
 
@@ -138,6 +142,7 @@ public class MyElasticJob implements SimpleJob {
     <version>${lasted.release.version}</version>
 </dependency>
 ```
+
 ### Job development
 
 Same with `Elastic-Job-Lite`
@@ -145,15 +150,11 @@ Same with `Elastic-Job-Lite`
 ### Job App configuration
 
 ```shell
-curl -l -H "Content-type: application/json" -X POST -d 
-'{"appName":"yourAppName","appURL":"http://app_host:8080/foo-job.tar.gz","cpuCount":0.1,"memoryMB":64.0,"bootstrapScript":"bin/start.sh","appCacheEnable":true}' 
-http://elastic_job_cloud_host:8899/app
+curl -l -H "Content-type: application/json" -X POST -d '{"appName":"yourAppName","appURL":"http://app_host:8080/foo-job.tar.gz","cpuCount":0.1,"memoryMB":64.0,"bootstrapScript":"bin/start.sh","appCacheEnable":true}' http://elastic_job_cloud_host:8899/api/app
 ```
 
 ### Job configuration
 
 ```shell
-curl -l -H "Content-type: application/json" -X POST -d 
-'{"jobName":"foo_job","jobClass":"yourJobClass","jobType":"SIMPLE","jobExecutionType":"TRANSIENT","cron":"0/5 * * * * ?","shardingTotalCount":5,"cpuCount":0.1,"memoryMB":64.0,"appURL":"http://app_host:8080/foo-job.tar.gz","failover":true,"misfire":true,"bootstrapScript":"bin/start.sh"}' 
-http://elastic_job_cloud_host:8899/job/register
+curl -l -H "Content-type: application/json" -X POST -d '{"jobName":"foo_job","appName":"yourAppName","jobClass":"yourJobClass","jobType":"SIMPLE","jobExecutionType":"TRANSIENT","cron":"0/5 * * * * ?","shardingTotalCount":5,"cpuCount":0.1,"memoryMB":64.0,"failover":true,"misfire":true,"bootstrapScript":"bin/start.sh"}' http://elastic_job_cloud_host:8899/api/job/register
 ```
