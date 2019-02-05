@@ -104,7 +104,14 @@ public abstract class AbstractElasticJobExecutor {
         if (shardingContexts.isAllowSendJobEvent()) {
             jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_STAGING, String.format("Job '%s' execute begin.", jobName));
         }
-        jobFacade.cleanPreviousExecutionInfo();
+        if (jobFacade.misfireIfRunning(shardingContexts.getShardingItemParameters().keySet())) {
+            if (shardingContexts.isAllowSendJobEvent()) {
+                jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_FINISHED, String.format(
+                        "Previous job '%s' - shardingItems '%s' is still running, misfired job will start after previous job completed.", jobName, 
+                        shardingContexts.getShardingItemParameters().keySet()));
+            }
+            return;
+        }
         try {
             jobFacade.beforeJobExecuted(shardingContexts);
             //CHECKSTYLE:OFF
@@ -113,6 +120,10 @@ public abstract class AbstractElasticJobExecutor {
             jobExceptionHandler.handleException(jobName, cause);
         }
         execute(shardingContexts, JobExecutionEvent.ExecutionSource.NORMAL_TRIGGER);
+        while (jobFacade.isExecuteMisfired(shardingContexts.getShardingItemParameters().keySet())) {
+            jobFacade.clearMisfire(shardingContexts.getShardingItemParameters().keySet());
+            execute(shardingContexts, JobExecutionEvent.ExecutionSource.MISFIRE);
+        }
         jobFacade.failoverIfNecessary();
         try {
             jobFacade.afterJobExecuted(shardingContexts);
@@ -190,21 +201,21 @@ public abstract class AbstractElasticJobExecutor {
             jobFacade.postJobExecutionEvent(startEvent);
         }
         log.trace("Job '{}' executing, item is: '{}'.", jobName, item);
-        JobExecutionEvent completeEvent = null;
+        JobExecutionEvent completeEvent;
         try {
             process(new ShardingContext(shardingContexts, item));
             completeEvent = startEvent.executionSuccess();
             log.trace("Job '{}' executed, item is: '{}'.", jobName, item);
+            if (shardingContexts.isAllowSendJobEvent()) {
+                jobFacade.postJobExecutionEvent(completeEvent);
+            }
             // CHECKSTYLE:OFF
         } catch (final Throwable cause) {
             // CHECKSTYLE:ON
             completeEvent = startEvent.executionFailure(cause);
+            jobFacade.postJobExecutionEvent(completeEvent);
             itemErrorMessages.put(item, ExceptionUtil.transform(cause));
             jobExceptionHandler.handleException(jobName, cause);
-        } finally {
-            if (shardingContexts.isAllowSendJobEvent()) {
-                jobFacade.postJobExecutionEvent(completeEvent);
-            }
         }
     }
     

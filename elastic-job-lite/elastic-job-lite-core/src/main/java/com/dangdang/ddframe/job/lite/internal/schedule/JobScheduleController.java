@@ -24,12 +24,11 @@ import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * 作业调度控制器.
@@ -37,13 +36,11 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class JobScheduleController {
+public final class JobScheduleController {
     
     private final Scheduler scheduler;
     
     private final JobDetail jobDetail;
-    
-    private final SchedulerFacade schedulerFacade;
     
     private final String triggerIdentity;
     
@@ -68,7 +65,7 @@ public class JobScheduleController {
      * 
      * @param cron CRON表达式
      */
-    public void rescheduleJob(final String cron) {
+    public synchronized void rescheduleJob(final String cron) {
         try {
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(TriggerKey.triggerKey(triggerIdentity));
             if (!scheduler.isShutdown() && null != trigger && !cron.equals(trigger.getCronExpression())) {
@@ -80,48 +77,26 @@ public class JobScheduleController {
     }
     
     private CronTrigger createTrigger(final String cron) {
-        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cron);
-        if (schedulerFacade.loadJobConfiguration().getTypeConfig().getCoreConfig().isMisfire()) {
-            cronScheduleBuilder = cronScheduleBuilder.withMisfireHandlingInstructionFireAndProceed();
-        } else {
-            cronScheduleBuilder = cronScheduleBuilder.withMisfireHandlingInstructionDoNothing();
-        }
-        return TriggerBuilder.newTrigger()
-                .withIdentity(triggerIdentity)
-                .withSchedule(cronScheduleBuilder).build();
+        return TriggerBuilder.newTrigger().withIdentity(triggerIdentity).withSchedule(CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing()).build();
     }
     
     /**
-     * 获取下次作业触发时间.
+     * 判断作业是否暂停.
      * 
-     * @return 下次作业触发时间
+     * @return 作业是否暂停
      */
-    public Date getNextFireTime() {
-        List<? extends Trigger> triggers;
+    public synchronized boolean isPaused() {
         try {
-            triggers = scheduler.getTriggersOfJob(jobDetail.getKey());
+            return !scheduler.isShutdown() && Trigger.TriggerState.PAUSED == scheduler.getTriggerState(new TriggerKey(triggerIdentity));
         } catch (final SchedulerException ex) {
-            return null;
+            throw new JobSystemException(ex);
         }
-        Date result = null;
-        for (Trigger each : triggers) {
-            Date nextFireTime = each.getNextFireTime();
-            if (null == nextFireTime) {
-                continue;
-            }
-            if (null == result) {
-                result = nextFireTime;
-            } else if (nextFireTime.getTime() < result.getTime()) {
-                result = nextFireTime;
-            }
-        }
-        return result;
     }
     
     /**
      * 暂停作业.
      */
-    public void pauseJob() {
+    public synchronized void pauseJob() {
         try {
             if (!scheduler.isShutdown()) {
                 scheduler.pauseAll();
@@ -134,7 +109,7 @@ public class JobScheduleController {
     /**
      * 恢复作业.
      */
-    public void resumeJob() {
+    public synchronized void resumeJob() {
         try {
             if (!scheduler.isShutdown()) {
                 scheduler.resumeAll();
@@ -144,24 +119,34 @@ public class JobScheduleController {
         }
     }
     
-    /**
+       /**
      * 立刻启动作业.
      */
-    public void triggerJob() {
+    public synchronized void triggerJob() {
         try {
             if (!scheduler.isShutdown()) {
-                scheduler.triggerJob(jobDetail.getKey());
+            	JobDetail jobDetailInQuartz = scheduler.getJobDetail(jobDetail.getKey());
+            	if(jobDetailInQuartz==null){//说明job被quartz删除,用SimpleScheduleBuilder创建一个job临时执行
+            		scheduler.scheduleJob(jobDetail, createSimpleTrigger());
+            		scheduler.start();
+            	}else
+            		scheduler.triggerJob(jobDetail.getKey());
             }
         } catch (final SchedulerException ex) {
             throw new JobSystemException(ex);
         }
     }
     
+    private SimpleTrigger createSimpleTrigger() {
+        return TriggerBuilder.newTrigger().withIdentity(triggerIdentity).withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                .withIntervalInMilliseconds(1)
+                .withRepeatCount(0)).build();
+    }
+    
     /**
      * 关闭调度器.
      */
-    public void shutdown() {
-        schedulerFacade.releaseJobResource();
+    public synchronized void shutdown() {
         try {
             if (!scheduler.isShutdown()) {
                 scheduler.shutdown();
