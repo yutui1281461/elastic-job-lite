@@ -22,6 +22,8 @@ import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
 import com.dangdang.ddframe.job.lite.internal.listener.AbstractJobListener;
 import com.dangdang.ddframe.job.lite.internal.listener.AbstractListenerManager;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
 
 import java.util.List;
@@ -31,7 +33,7 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-public final class GuaranteeListenerManager extends AbstractListenerManager {
+public class GuaranteeListenerManager extends AbstractListenerManager {
     
     private final GuaranteeNode guaranteeNode;
     
@@ -52,8 +54,8 @@ public final class GuaranteeListenerManager extends AbstractListenerManager {
     class StartedNodeRemovedJobListener extends AbstractJobListener {
         
         @Override
-        protected void dataChanged(final String path, final Type eventType, final String data) {
-            if (Type.NODE_REMOVED == eventType && guaranteeNode.isStartedRootNode(path)) {
+        protected void dataChanged(final CuratorFramework client, final TreeCacheEvent event, final String path) {
+            if (Type.NODE_REMOVED == event.getType() && guaranteeNode.isStartedRootNode(path)) {
                 for (ElasticJobListener each : elasticJobListeners) {
                     if (each instanceof AbstractDistributeOnceElasticJobListener) {
                         ((AbstractDistributeOnceElasticJobListener) each).notifyWaitingTaskStart();
@@ -66,8 +68,8 @@ public final class GuaranteeListenerManager extends AbstractListenerManager {
     class CompletedNodeRemovedJobListener extends AbstractJobListener {
         
         @Override
-        protected void dataChanged(final String path, final Type eventType, final String data) {
-            if (Type.NODE_REMOVED == eventType && guaranteeNode.isCompletedRootNode(path)) {
+        protected void dataChanged(final CuratorFramework client, final TreeCacheEvent event, final String path) {
+            if (Type.NODE_REMOVED == event.getType() && guaranteeNode.isCompletedRootNode(path)) {
                 for (ElasticJobListener each : elasticJobListeners) {
                     if (each instanceof AbstractDistributeOnceElasticJobListener) {
                         ((AbstractDistributeOnceElasticJobListener) each).notifyWaitingTaskComplete();

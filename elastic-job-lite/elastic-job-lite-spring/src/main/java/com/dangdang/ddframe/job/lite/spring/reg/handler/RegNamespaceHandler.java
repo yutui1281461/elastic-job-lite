@@ -25,7 +25,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * 
  * @author zhangliang
  */
-public final class RegNamespaceHandler extends NamespaceHandlerSupport {
+public class RegNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {

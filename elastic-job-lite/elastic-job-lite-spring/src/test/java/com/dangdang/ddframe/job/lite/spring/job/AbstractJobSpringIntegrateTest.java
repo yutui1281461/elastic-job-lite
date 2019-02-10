@@ -50,8 +50,8 @@ public abstract class AbstractJobSpringIntegrateTest extends AbstractZookeeperJU
     
     @After
     public void tearDown() {
-        JobRegistry.getInstance().shutdown(simpleJobName);
-        JobRegistry.getInstance().shutdown(throughputDataflowJobName);
+        JobRegistry.getInstance().getJobScheduleController(simpleJobName).shutdown();
+        JobRegistry.getInstance().getJobScheduleController(throughputDataflowJobName).shutdown();
     }
     
     @Test
@@ -65,7 +65,7 @@ public abstract class AbstractJobSpringIntegrateTest extends AbstractZookeeperJU
             sleep(100L);
         }
         assertTrue(FooSimpleElasticJob.isCompleted());
-        assertTrue(regCenter.isExisted("/" + simpleJobName + "/sharding"));
+        assertTrue(regCenter.isExisted("/" + simpleJobName + "/execution"));
     }
     
     private void assertThroughputDataflowElasticJobBean() {
@@ -73,7 +73,7 @@ public abstract class AbstractJobSpringIntegrateTest extends AbstractZookeeperJU
             sleep(100L);
         }
         assertTrue(DataflowElasticJob.isCompleted());
-        assertTrue(regCenter.isExisted("/" + throughputDataflowJobName + "/sharding"));
+        assertTrue(regCenter.isExisted("/" + throughputDataflowJobName + "/execution"));
     }
     
     private static void sleep(final long millis) {

@@ -17,19 +17,19 @@
 
 package com.dangdang.ddframe.job.lite.api.strategy.fixture;
 
-import com.dangdang.ddframe.job.lite.api.strategy.JobInstance;
 import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategy;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategyOption;
 
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InvalidJobShardingStrategy implements JobShardingStrategy {
     
+    public InvalidJobShardingStrategy(final String input) {
+    }
+    
     @Override
-    public Map<JobInstance, List<Integer>> sharding(final List<JobInstance> jobInstances, final String jobName, final int shardingTotalCount) {
+    public Map<String, List<Integer>> sharding(final List<String> serversList, final JobShardingStrategyOption option) {
         return null;
     }
 }

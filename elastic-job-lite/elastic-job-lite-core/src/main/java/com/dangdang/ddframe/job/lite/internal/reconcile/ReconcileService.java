@@ -19,7 +19,7 @@ package com.dangdang.ddframe.job.lite.internal.reconcile;
 
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.internal.config.ConfigurationService;
-import com.dangdang.ddframe.job.lite.internal.election.LeaderService;
+import com.dangdang.ddframe.job.lite.internal.election.LeaderElectionService;
 import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.google.common.util.concurrent.AbstractScheduledService;
@@ -28,12 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 调解分布式作业不一致状态服务.
+ * 修复作业服务器不一致状态服务.
  *
  * @author caohao
+ *
  */
 @Slf4j
-public final class ReconcileService extends AbstractScheduledService {
+public class ReconcileService extends AbstractScheduledService {
     
     private long lastReconcileTime;
     
@@ -41,22 +42,23 @@ public final class ReconcileService extends AbstractScheduledService {
     
     private final ShardingService shardingService;
     
-    private final LeaderService leaderService;
+    private final LeaderElectionService leaderElectionService;
     
     public ReconcileService(final CoordinatorRegistryCenter regCenter, final String jobName) {
         lastReconcileTime = System.currentTimeMillis();
         configService = new ConfigurationService(regCenter, jobName);
         shardingService = new ShardingService(regCenter, jobName);
-        leaderService = new LeaderService(regCenter, jobName);
+        leaderElectionService = new LeaderElectionService(regCenter, jobName);
     }
     
     @Override
     protected void runOneIteration() throws Exception {
         LiteJobConfiguration config = configService.load(true);
-        int reconcileIntervalMinutes = null == config ? -1 : config.getReconcileIntervalMinutes();
+        int reconcileIntervalMinutes = null == config || config.getReconcileIntervalMinutes() <= 0 ? -1 : config.getReconcileIntervalMinutes();
         if (reconcileIntervalMinutes > 0 && (System.currentTimeMillis() - lastReconcileTime >= reconcileIntervalMinutes * 60 * 1000)) {
             lastReconcileTime = System.currentTimeMillis();
-            if (leaderService.isLeaderUntilBlock() && !shardingService.isNeedSharding() && shardingService.hasShardingInfoInOfflineServers()) {
+            if (leaderElectionService.isLeader() && !shardingService.isNeedSharding()
+                    && shardingService.hasNotRunningShardingNode()) {
                 log.warn("Elastic Job: job status node has inconsistent value,start reconciling...");
                 shardingService.setReshardingFlag();
             }

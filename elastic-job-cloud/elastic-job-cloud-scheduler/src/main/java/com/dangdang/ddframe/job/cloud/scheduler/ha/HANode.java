@@ -22,7 +22,7 @@ package com.dangdang.ddframe.job.cloud.scheduler.ha;
  * 
  * @author gaohongtao
  */
-public final class HANode {
+public class HANode {
     
     /**
      * HA根节点.

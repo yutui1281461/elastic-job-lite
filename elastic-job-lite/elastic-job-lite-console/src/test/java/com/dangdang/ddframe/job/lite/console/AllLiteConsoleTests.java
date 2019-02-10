@@ -21,9 +21,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.dangdang.ddframe.job.lite.console.util.HomeFolderUtilsTest;
+import com.dangdang.ddframe.job.lite.console.util.HomeFolderTest;
 
 @RunWith(Suite.class)
-@SuiteClasses(HomeFolderUtilsTest.class)
+@SuiteClasses(HomeFolderTest.class)
 public class AllLiteConsoleTests {
 }

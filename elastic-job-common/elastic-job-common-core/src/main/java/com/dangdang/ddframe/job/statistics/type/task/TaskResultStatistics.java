@@ -17,12 +17,13 @@
 
 package com.dangdang.ddframe.job.statistics.type.task;
 
+import java.util.Date;
+
 import com.dangdang.ddframe.job.statistics.StatisticInterval;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Date;
 
 /**
  * 任务运行结果统计数据.
@@ -32,7 +33,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @RequiredArgsConstructor
-public final class TaskResultStatistics {
+public class TaskResultStatistics {
     
     private long id;
     

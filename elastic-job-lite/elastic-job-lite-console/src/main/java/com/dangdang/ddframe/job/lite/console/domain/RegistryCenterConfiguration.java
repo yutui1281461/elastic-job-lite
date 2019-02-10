@@ -17,27 +17,25 @@
 
 package com.dangdang.ddframe.job.lite.console.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 
-/**
- * 注册中心配置.
- *
- * @author zhangliang
- */
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = {"zkAddressList", "namespace", "digest", "activated"})
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @NoArgsConstructor
-public final class RegistryCenterConfiguration implements Serializable {
+public class RegistryCenterConfiguration implements Serializable {
     
     private static final long serialVersionUID = -5996257770767863699L;
     
@@ -55,4 +53,8 @@ public final class RegistryCenterConfiguration implements Serializable {
     
     @XmlAttribute
     private boolean activated;
+    
+    public RegistryCenterConfiguration(final String name) {
+        this.name = name;
+    }
 }

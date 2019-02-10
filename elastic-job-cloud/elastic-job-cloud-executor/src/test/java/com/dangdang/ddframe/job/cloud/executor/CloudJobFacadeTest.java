@@ -106,7 +106,7 @@ public class CloudJobFacadeTest {
     
     @Test
     public void assertMisfireIfNecessary() {
-        jobFacade.misfireIfRunning(null);
+        jobFacade.misfireIfNecessary(null);
     }
     
     @Test
@@ -137,6 +137,11 @@ public class CloudJobFacadeTest {
     @Test
     public void assertIsNeedSharding() {
         assertFalse(jobFacade.isNeedSharding());
+    }
+    
+    @Test
+    public void assertCleanPreviousExecutionInfo() {
+        jobFacade.cleanPreviousExecutionInfo();
     }
     
     @Test

@@ -17,21 +17,17 @@
 
 package com.dangdang.ddframe.job.lite.console.repository.impl;
 
-import com.dangdang.ddframe.job.lite.console.exception.JobConsoleException;
-import com.dangdang.ddframe.job.lite.console.repository.XmlRepository;
-import com.dangdang.ddframe.job.lite.console.util.HomeFolderUtils;
+import java.io.File;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.io.File;
 
-/**
- * 基于XML的数据访问器实现类.
- * 
- * @param <E> 数据类型
- * @author zhangliang
- */
+import com.dangdang.ddframe.job.lite.console.exception.JobConsoleException;
+import com.dangdang.ddframe.job.lite.console.repository.XmlRepository;
+import com.dangdang.ddframe.job.lite.console.util.HomeFolder;
+
 public abstract class AbstractXmlRepositoryImpl<E> implements XmlRepository<E> {
     
     private final File file;
@@ -41,9 +37,13 @@ public abstract class AbstractXmlRepositoryImpl<E> implements XmlRepository<E> {
     private JAXBContext jaxbContext;
     
     protected AbstractXmlRepositoryImpl(final String fileName, final Class<E> clazz) {
-        file = new File(HomeFolderUtils.getFilePathInHomeFolder(fileName));
+        file = new File(HomeFolder.getFilePathInHomeFolder(fileName));
         this.clazz = clazz;
-        HomeFolderUtils.createHomeFolderIfNotExisted();
+    }
+    
+    @PostConstruct
+    private void init() {
+        HomeFolder.createHomeFolderIfNotExisted();
         try {
             jaxbContext = JAXBContext.newInstance(clazz);
         } catch (final JAXBException ex) {

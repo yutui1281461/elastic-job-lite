@@ -32,11 +32,6 @@ public final class RegExceptionHandlerTest {
         RegExceptionHandler.handleException(new InterruptedException());
     }
     
-    @Test
-    public void assertHandleExceptionWithNull() {
-        RegExceptionHandler.handleException(null);
-    }
-    
     @Test(expected = RegException.class)
     public void assertHandleExceptionWithOtherException() {
         RegExceptionHandler.handleException(new RuntimeException());

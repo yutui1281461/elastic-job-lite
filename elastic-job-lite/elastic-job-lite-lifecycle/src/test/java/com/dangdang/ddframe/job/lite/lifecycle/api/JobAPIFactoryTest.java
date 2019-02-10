@@ -37,11 +37,6 @@ public final class JobAPIFactoryTest extends AbstractEmbedZookeeperBaseTest {
     }
     
     @Test
-    public void assertCreateServerOperateAPI() {
-        assertThat(JobAPIFactory.createShardingOperateAPI(getConnectionString(), "namespace", Optional.<String>absent()), instanceOf(ShardingOperateAPI.class));
-    }
-    
-    @Test
     public void assertCreateJobStatisticsAPI() {
         assertThat(JobAPIFactory.createJobStatisticsAPI(getConnectionString(), "namespace", Optional.<String>absent()), instanceOf(JobStatisticsAPI.class));
     }
@@ -49,10 +44,5 @@ public final class JobAPIFactoryTest extends AbstractEmbedZookeeperBaseTest {
     @Test
     public void assertCreateServerStatisticsAPI() {
         assertThat(JobAPIFactory.createServerStatisticsAPI(getConnectionString(), "namespace", Optional.<String>absent()), instanceOf(ServerStatisticsAPI.class));
-    }
-    
-    @Test
-    public void assertCreateShardingStatisticsAPI() {
-        assertThat(JobAPIFactory.createShardingStatisticsAPI(getConnectionString(), "namespace", Optional.<String>absent()), instanceOf(ShardingStatisticsAPI.class));
     }
 }

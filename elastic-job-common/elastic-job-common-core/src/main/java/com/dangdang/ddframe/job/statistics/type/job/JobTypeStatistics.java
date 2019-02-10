@@ -27,7 +27,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public final class JobTypeStatistics {
+public class JobTypeStatistics {
     
     private int scriptJobCount;
     

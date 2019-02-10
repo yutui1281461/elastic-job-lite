@@ -150,19 +150,24 @@ public abstract class AbstractJobConfigurationGsonTypeAdapter<T extends JobRootC
     
     private JobTypeConfiguration getJobTypeConfiguration(
             final JobCoreConfiguration coreConfig, final JobType jobType, final String jobClass, final boolean streamingProcess, final String scriptCommandLine) {
+        JobTypeConfiguration result;
         Preconditions.checkNotNull(jobType, "jobType cannot be null.");
         switch (jobType) {
             case SIMPLE:
                 Preconditions.checkArgument(!Strings.isNullOrEmpty(jobClass), "jobClass cannot be empty.");
-                return new SimpleJobConfiguration(coreConfig, jobClass);
+                result = new SimpleJobConfiguration(coreConfig, jobClass);
+                break;
             case DATAFLOW:
                 Preconditions.checkArgument(!Strings.isNullOrEmpty(jobClass), "jobClass cannot be empty.");
-                return new DataflowJobConfiguration(coreConfig, jobClass, streamingProcess);
+                result = new DataflowJobConfiguration(coreConfig, jobClass, streamingProcess);
+                break;
             case SCRIPT:
-                return new ScriptJobConfiguration(coreConfig, scriptCommandLine);
+                result = new ScriptJobConfiguration(coreConfig, scriptCommandLine);
+                break;
             default:
-                throw new UnsupportedOperationException(String.valueOf(jobType));
+                throw new UnsupportedOperationException(jobType.name());
         }
+        return result;
     }
     
     protected abstract T getJobRootConfiguration(final JobTypeConfiguration typeConfig, final Map<String, Object> customizedValueMap);

@@ -34,7 +34,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LeasesQueue {
+public class LeasesQueue {
     
     private static final LeasesQueue INSTANCE = new LeasesQueue();
     

@@ -17,11 +17,13 @@
 
 package com.dangdang.ddframe.job.lite.internal.schedule;
 
-import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
-import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
-import lombok.RequiredArgsConstructor;
 import org.quartz.Trigger;
 import org.quartz.listeners.TriggerListenerSupport;
+
+import com.dangdang.ddframe.job.lite.internal.execution.ExecutionService;
+import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * 作业触发监听器.
@@ -42,8 +44,6 @@ public final class JobTriggerListener extends TriggerListenerSupport {
     
     @Override
     public void triggerMisfired(final Trigger trigger) {
-        if (null != trigger.getPreviousFireTime()) {
-            executionService.setMisfire(shardingService.getLocalShardingItems());
-        }
+        executionService.setMisfire(shardingService.getLocalHostShardingItems());
     }
 }

@@ -36,7 +36,7 @@ import java.util.Map;
  *
  * @author caohao
  */
-public final class JobConfigurationContext implements JobRootConfiguration {
+public class JobConfigurationContext implements JobRootConfiguration {
     
     private static final String IGNORE_CRON = "ignoredCron";
     

@@ -26,7 +26,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        JobInstanceTest.class, 
         JobShardingStrategyFactoryTest.class, 
         AverageAllocationJobShardingStrategyTest.class, 
         OdevitySortByNameJobShardingStrategyTest.class, 
