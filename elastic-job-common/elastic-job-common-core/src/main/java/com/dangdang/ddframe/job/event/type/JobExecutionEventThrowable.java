@@ -31,7 +31,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString(of = "plainText")
-public final class JobExecutionEventThrowable {
+public class JobExecutionEventThrowable {
     
     private final Throwable throwable;
     

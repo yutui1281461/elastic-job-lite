@@ -56,7 +56,7 @@ import java.util.Map;
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatisticManager {
+public class StatisticManager {
     
     private static volatile StatisticManager instance;
     
@@ -286,10 +286,11 @@ public final class StatisticManager {
     
     private Date getOnlineDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date onlineDate = null;
         try {
-            return formatter.parse("2016-12-16");
+            onlineDate = formatter.parse("2016-12-16");
         } catch (final ParseException ex) {
-            return null;
         }
+        return onlineDate;
     }
 }

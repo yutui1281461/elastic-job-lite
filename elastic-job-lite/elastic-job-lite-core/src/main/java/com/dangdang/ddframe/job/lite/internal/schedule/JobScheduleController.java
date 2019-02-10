@@ -28,17 +28,22 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * 作业调度控制器.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class JobScheduleController {
+public class JobScheduleController {
     
     private final Scheduler scheduler;
     
     private final JobDetail jobDetail;
+    
+    private final SchedulerFacade schedulerFacade;
     
     private final String triggerIdentity;
     
@@ -63,7 +68,7 @@ public final class JobScheduleController {
      * 
      * @param cron CRON表达式
      */
-    public synchronized void rescheduleJob(final String cron) {
+    public void rescheduleJob(final String cron) {
         try {
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(TriggerKey.triggerKey(triggerIdentity));
             if (!scheduler.isShutdown() && null != trigger && !cron.equals(trigger.getCronExpression())) {
@@ -75,26 +80,48 @@ public final class JobScheduleController {
     }
     
     private CronTrigger createTrigger(final String cron) {
-        return TriggerBuilder.newTrigger().withIdentity(triggerIdentity).withSchedule(CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing()).build();
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cron);
+        if (schedulerFacade.loadJobConfiguration().getTypeConfig().getCoreConfig().isMisfire()) {
+            cronScheduleBuilder = cronScheduleBuilder.withMisfireHandlingInstructionFireAndProceed();
+        } else {
+            cronScheduleBuilder = cronScheduleBuilder.withMisfireHandlingInstructionDoNothing();
+        }
+        return TriggerBuilder.newTrigger()
+                .withIdentity(triggerIdentity)
+                .withSchedule(cronScheduleBuilder).build();
     }
     
     /**
-     * 判断作业是否暂停.
+     * 获取下次作业触发时间.
      * 
-     * @return 作业是否暂停
+     * @return 下次作业触发时间
      */
-    public synchronized boolean isPaused() {
+    public Date getNextFireTime() {
+        List<? extends Trigger> triggers;
         try {
-            return !scheduler.isShutdown() && Trigger.TriggerState.PAUSED == scheduler.getTriggerState(new TriggerKey(triggerIdentity));
+            triggers = scheduler.getTriggersOfJob(jobDetail.getKey());
         } catch (final SchedulerException ex) {
-            throw new JobSystemException(ex);
+            return null;
         }
+        Date result = null;
+        for (Trigger each : triggers) {
+            Date nextFireTime = each.getNextFireTime();
+            if (null == nextFireTime) {
+                continue;
+            }
+            if (null == result) {
+                result = nextFireTime;
+            } else if (nextFireTime.getTime() < result.getTime()) {
+                result = nextFireTime;
+            }
+        }
+        return result;
     }
     
     /**
      * 暂停作业.
      */
-    public synchronized void pauseJob() {
+    public void pauseJob() {
         try {
             if (!scheduler.isShutdown()) {
                 scheduler.pauseAll();
@@ -107,7 +134,7 @@ public final class JobScheduleController {
     /**
      * 恢复作业.
      */
-    public synchronized void resumeJob() {
+    public void resumeJob() {
         try {
             if (!scheduler.isShutdown()) {
                 scheduler.resumeAll();
@@ -120,7 +147,7 @@ public final class JobScheduleController {
     /**
      * 立刻启动作业.
      */
-    public synchronized void triggerJob() {
+    public void triggerJob() {
         try {
             if (!scheduler.isShutdown()) {
                 scheduler.triggerJob(jobDetail.getKey());
@@ -133,7 +160,8 @@ public final class JobScheduleController {
     /**
      * 关闭调度器.
      */
-    public synchronized void shutdown() {
+    public void shutdown() {
+        schedulerFacade.releaseJobResource();
         try {
             if (!scheduler.isShutdown()) {
                 scheduler.shutdown();

@@ -18,11 +18,14 @@
 package com.dangdang.ddframe.job.cloud.scheduler.restful;
 
 import com.dangdang.ddframe.job.cloud.scheduler.env.RestfulServerConfiguration;
-import com.dangdang.ddframe.job.cloud.scheduler.mesos.ReconcileService;
+import com.dangdang.ddframe.job.cloud.scheduler.config.job.CloudJobConfiguration;
+import com.dangdang.ddframe.job.cloud.scheduler.config.job.CloudJobConfigurationGsonFactory;
+import com.dangdang.ddframe.job.cloud.scheduler.config.app.CloudAppConfiguration;
+import com.dangdang.ddframe.job.cloud.scheduler.config.app.CloudAppConfigurationGsonFactory;
 import com.dangdang.ddframe.job.cloud.scheduler.producer.ProducerManager;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.restful.RestfulServer;
-import com.dangdang.ddframe.job.security.WwwAuthFilter;
+import com.dangdang.ddframe.job.util.json.GsonFactory;
 import com.google.common.base.Optional;
 
 /**
@@ -30,17 +33,19 @@ import com.google.common.base.Optional;
  *
  * @author caohao
  */
-public final class RestfulService {
+public class RestfulService {
     
     private static final String CONSOLE_PATH = "console";
     
     private final RestfulServer restfulServer;
     
-    public RestfulService(final CoordinatorRegistryCenter regCenter, final RestfulServerConfiguration config, final ProducerManager producerManager, final ReconcileService reconcileService) {
+    public RestfulService(final CoordinatorRegistryCenter regCenter, final RestfulServerConfiguration config, final ProducerManager producerManager) {
         restfulServer = new RestfulServer(config.getPort());
+        GsonFactory.registerTypeAdapter(CloudJobConfiguration.class, new CloudJobConfigurationGsonFactory.CloudJobConfigurationGsonTypeAdapter());
+        GsonFactory.registerTypeAdapter(CloudAppConfiguration.class, new CloudAppConfigurationGsonFactory.CloudAppConfigurationGsonTypeAdapter());
         CloudJobRestfulApi.init(regCenter, producerManager);
-        CloudAppRestfulApi.init(regCenter, producerManager);
-        CloudOperationRestfulApi.init(regCenter, reconcileService);
+        CloudAppRestfulApi.init(regCenter);
+        CloudOperationRestfulApi.init(producerManager);
     }
     
     /**
@@ -48,9 +53,7 @@ public final class RestfulService {
      */
     public void start() {
         try {
-            restfulServer.addFilter(WwwAuthFilter.class, "*/")
-                         .addFilter(WwwAuthFilter.class, "*.html")
-                         .start(RestfulService.class.getPackage().getName(), Optional.of(CONSOLE_PATH));
+            restfulServer.start(RestfulService.class.getPackage().getName(), Optional.of(CONSOLE_PATH));
             //CHECKSTYLE:OFF
         } catch (final Exception ex) {
             //CHECKSTYLE:ON

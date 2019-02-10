@@ -1,1 +1,1 @@
-@echo Sharding Context: %*
+@echo test %*

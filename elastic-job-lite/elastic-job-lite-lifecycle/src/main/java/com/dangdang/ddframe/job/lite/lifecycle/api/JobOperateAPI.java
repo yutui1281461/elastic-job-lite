@@ -19,6 +19,8 @@ package com.dangdang.ddframe.job.lite.lifecycle.api;
 
 import com.google.common.base.Optional;
 
+import java.util.Collection;
+
 /**
  * 操作作业的API.
  *
@@ -35,6 +37,24 @@ public interface JobOperateAPI {
      * @param serverIp 作业服务器IP地址
      */
     void trigger(Optional<String> jobName, Optional<String> serverIp);
+    
+    /**
+     * 作业暂停.
+     * 
+     * <p>不会导致重新分片.</p>
+     *
+     * @param jobName 作业名称
+     * @param serverIp 作业服务器IP地址
+     */
+    void pause(Optional<String> jobName, Optional<String> serverIp);
+    
+    /**
+     * 作业恢复.
+     *
+     * @param jobName 作业名称
+     * @param serverIp 作业服务器IP地址
+     */
+    void resume(Optional<String> jobName, Optional<String> serverIp);
     
     /**
      * 作业禁用.
@@ -65,8 +85,11 @@ public interface JobOperateAPI {
     /**
      * 作业删除.
      * 
+     * <p>只有停止运行的作业才能删除.</p>
+     * 
      * @param jobName 作业名称
      * @param serverIp 作业服务器IP地址
+     * @return 因为未停止而导致未能成功删除的作业服务器IP地址列表
      */
-    void remove(Optional<String> jobName, Optional<String> serverIp);
+    Collection<String> remove(Optional<String> jobName, Optional<String> serverIp);
 }

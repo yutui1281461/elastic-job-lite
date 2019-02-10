@@ -41,7 +41,7 @@ import java.util.List;
  * @author caohao
  */
 @Slf4j
-public final class MonitorService {
+public class MonitorService {
     
     public static final String DUMP_COMMAND = "dump";
     

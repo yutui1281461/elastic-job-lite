@@ -28,7 +28,7 @@ import java.util.Collection;
  * 
  * @author zhangliang
  */
-public final class GuaranteeService {
+public class GuaranteeService {
     
     private final JobNodeStorage jobNodeStorage;
     

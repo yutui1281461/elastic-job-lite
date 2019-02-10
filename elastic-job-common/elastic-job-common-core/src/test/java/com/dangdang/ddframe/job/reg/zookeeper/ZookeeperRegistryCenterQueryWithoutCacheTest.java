@@ -85,13 +85,10 @@ public final class ZookeeperRegistryCenterQueryWithoutCacheTest {
     
     @Test
     public void assertGetRegistryCenterTime() {
-        long regCenterTime = zkRegCenter.getRegistryCenterTime("/_systemTime/current");
-        assertTrue(regCenterTime <= System.currentTimeMillis());
-        long updatedRegCenterTime = zkRegCenter.getRegistryCenterTime("/_systemTime/current");
-        System.out.println(regCenterTime + "," + updatedRegCenterTime);
-        assertTrue(regCenterTime < updatedRegCenterTime);
+        assertTrue(zkRegCenter.getRegistryCenterTime("/_systemTime/current") <= System.currentTimeMillis());
     }
-
+    
+    
     @Test
     public void assertGetWithoutNode() {
         assertNull(zkRegCenter.get("/notExisted"));

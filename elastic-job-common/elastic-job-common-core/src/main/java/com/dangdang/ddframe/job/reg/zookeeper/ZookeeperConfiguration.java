@@ -30,7 +30,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public final class ZookeeperConfiguration {
+public class ZookeeperConfiguration {
     
     /**
      * 连接Zookeeper服务器的列表.

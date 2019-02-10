@@ -62,9 +62,15 @@ public final class LiteJobConfigurationTest {
     }
     
     @Test
-    public void assertIsNotFailover() {
-        assertFalse(LiteJobConfiguration.newBuilder(new SimpleJobConfiguration(JobCoreConfiguration.newBuilder("test_job", "0/1 * * * * ?", 3).failover(false).build(), 
+    public void assertIsNotFailoverWhenNotMonitorExecution() {
+        assertFalse(LiteJobConfiguration.newBuilder(new SimpleJobConfiguration(JobCoreConfiguration.newBuilder("test_job", "0/1 * * * * ?", 3).failover(true).build(), 
                 TestSimpleJob.class.getCanonicalName())).monitorExecution(false).build().isFailover());
+    }
+    
+    @Test
+    public void assertIsNotFailoverWhenMonitorExecution() {
+        assertFalse(LiteJobConfiguration.newBuilder(new SimpleJobConfiguration(JobCoreConfiguration.newBuilder("test_job", "0/1 * * * * ?", 3).failover(false).build(), 
+                TestSimpleJob.class.getCanonicalName())).monitorExecution(true).build().isFailover());
     }
     
     @Test

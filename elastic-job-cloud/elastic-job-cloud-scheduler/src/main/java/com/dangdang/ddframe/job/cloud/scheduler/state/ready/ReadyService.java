@@ -45,7 +45,7 @@ import java.util.Map;
  * @author liguangyun
  */
 @Slf4j
-public final class ReadyService {
+public class ReadyService {
     
     private final BootstrapEnvironment env = BootstrapEnvironment.getInstance();
     

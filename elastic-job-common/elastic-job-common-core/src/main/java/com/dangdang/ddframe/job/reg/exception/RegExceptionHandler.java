@@ -41,10 +41,7 @@ public final class RegExceptionHandler {
      * @param cause 待处理异常.
      */
     public static void handleException(final Exception cause) {
-        if (null == cause) {
-            return;
-        }
-        if (isIgnoredException(cause) || null != cause.getCause() && isIgnoredException(cause.getCause())) {
+        if (isIgnoredException(cause) || isIgnoredException(cause.getCause())) {
             log.debug("Elastic job: ignored exception for: {}", cause.getMessage());
         } else if (cause instanceof InterruptedException) {
             Thread.currentThread().interrupt();
@@ -54,6 +51,6 @@ public final class RegExceptionHandler {
     }
     
     private static boolean isIgnoredException(final Throwable cause) {
-        return cause instanceof ConnectionLossException || cause instanceof NoNodeException || cause instanceof NodeExistsException;
+        return null != cause && (cause instanceof ConnectionLossException || cause instanceof NoNodeException || cause instanceof NodeExistsException);
     }
 }

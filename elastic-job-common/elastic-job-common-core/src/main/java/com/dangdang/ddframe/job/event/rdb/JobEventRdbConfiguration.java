@@ -34,11 +34,11 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 @Getter
-public final class JobEventRdbConfiguration extends JobEventRdbIdentity implements JobEventConfiguration, Serializable {
+public class JobEventRdbConfiguration extends JobEventRdbIdentity implements JobEventConfiguration, Serializable {
     
     private static final long serialVersionUID = 3344410699286435226L;
     
-    private final transient DataSource dataSource;
+    private final DataSource dataSource;
     
     @Override
     public JobEventListener createJobEventListener() throws JobEventListenerConfigurationException {

@@ -2,6 +2,7 @@ package com.dangdang.ddframe.job.event.type;
 
 import com.dangdang.ddframe.job.context.ExecutionType;
 import com.dangdang.ddframe.job.event.JobEvent;
+import com.dangdang.ddframe.job.util.env.LocalHostService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
-public final class JobStatusTraceEvent implements JobEvent {
+public class JobStatusTraceEvent implements JobEvent {
+    
+    private static LocalHostService localHostService = new LocalHostService();
     
     private String id = UUID.randomUUID().toString();
     
@@ -44,7 +47,7 @@ public final class JobStatusTraceEvent implements JobEvent {
     private Date creationTime = new Date();
     
     public enum State {
-        TASK_STAGING, TASK_RUNNING, TASK_FINISHED, TASK_KILLED, TASK_LOST, TASK_FAILED, TASK_ERROR, TASK_DROPPED, TASK_GONE, TASK_GONE_BY_OPERATOR, TASK_UNREACHABLE, TASK_UNKNOWN
+        TASK_STAGING, TASK_RUNNING, TASK_FINISHED, TASK_KILLED, TASK_LOST, TASK_FAILED, TASK_ERROR
     }
     
     public enum Source {

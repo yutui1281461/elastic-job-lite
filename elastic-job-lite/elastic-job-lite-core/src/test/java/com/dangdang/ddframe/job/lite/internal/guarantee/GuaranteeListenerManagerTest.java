@@ -21,10 +21,11 @@ import com.dangdang.ddframe.job.lite.api.listener.AbstractDistributeOnceElasticJ
 import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
 import com.dangdang.ddframe.job.lite.internal.listener.AbstractJobListener;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodeStorage;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
+import org.apache.curator.framework.recipes.cache.ChildData;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.unitils.util.ReflectionUtils;
@@ -57,42 +58,48 @@ public final class GuaranteeListenerManagerTest {
     @Test
     public void assertStart() {
         guaranteeListenerManager.start();
-        verify(jobNodeStorage, times(2)).addDataListener(ArgumentMatchers.<AbstractJobListener>any());
+        verify(jobNodeStorage, times(2)).addDataListener(Matchers.<AbstractJobListener>any());
     }
     
     @Test
     public void assertStartedNodeRemovedJobListenerWhenIsNotRemoved() {
-        guaranteeListenerManager.new StartedNodeRemovedJobListener().dataChanged("/test_job/guarantee/started", Type.NODE_UPDATED, "");
+        guaranteeListenerManager.new StartedNodeRemovedJobListener().dataChanged(null, new TreeCacheEvent(TreeCacheEvent.Type.NODE_UPDATED,
+                new ChildData("/test_job/guarantee/started", null, "".getBytes())), "/test_job/guarantee/started");
         verify(distributeOnceElasticJobListener, times(0)).notifyWaitingTaskStart();
     }
     
     @Test
     public void assertStartedNodeRemovedJobListenerWhenIsNotStartedNode() {
-        guaranteeListenerManager.new StartedNodeRemovedJobListener().dataChanged("/other_job/guarantee/started", Type.NODE_REMOVED, "");
+        guaranteeListenerManager.new StartedNodeRemovedJobListener().dataChanged(null, new TreeCacheEvent(TreeCacheEvent.Type.NODE_REMOVED,
+                new ChildData("/other_job/guarantee/started", null, "".getBytes())), "/other_job/guarantee/started");
         verify(distributeOnceElasticJobListener, times(0)).notifyWaitingTaskStart();
     }
     
     @Test
     public void assertStartedNodeRemovedJobListenerWhenIsRemovedAndStartedNode() {
-        guaranteeListenerManager.new StartedNodeRemovedJobListener().dataChanged("/test_job/guarantee/started", Type.NODE_REMOVED, "");
+        guaranteeListenerManager.new StartedNodeRemovedJobListener().dataChanged(null, new TreeCacheEvent(TreeCacheEvent.Type.NODE_REMOVED,
+                new ChildData("/test_job/guarantee/started", null, "".getBytes())), "/test_job/guarantee/started");
         verify(distributeOnceElasticJobListener).notifyWaitingTaskStart();
     }
     
     @Test
     public void assertCompletedNodeRemovedJobListenerWhenIsNotRemoved() {
-        guaranteeListenerManager.new CompletedNodeRemovedJobListener().dataChanged("/test_job/guarantee/completed", Type.NODE_UPDATED, "");
+        guaranteeListenerManager.new CompletedNodeRemovedJobListener().dataChanged(null, new TreeCacheEvent(TreeCacheEvent.Type.NODE_UPDATED,
+                new ChildData("/test_job/guarantee/completed", null, "".getBytes())), "/test_job/guarantee/completed");
         verify(distributeOnceElasticJobListener, times(0)).notifyWaitingTaskStart();
     }
     
     @Test
     public void assertCompletedNodeRemovedJobListenerWhenIsNotCompletedNode() {
-        guaranteeListenerManager.new CompletedNodeRemovedJobListener().dataChanged("/other_job/guarantee/completed", Type.NODE_REMOVED, "");
+        guaranteeListenerManager.new CompletedNodeRemovedJobListener().dataChanged(null, new TreeCacheEvent(TreeCacheEvent.Type.NODE_REMOVED,
+                new ChildData("/other_job/guarantee/completed", null, "".getBytes())), "/other_job/guarantee/completed");
         verify(distributeOnceElasticJobListener, times(0)).notifyWaitingTaskStart();
     }
     
     @Test
     public void assertCompletedNodeRemovedJobListenerWhenIsRemovedAndCompletedNode() {
-        guaranteeListenerManager.new CompletedNodeRemovedJobListener().dataChanged("/test_job/guarantee/completed", Type.NODE_REMOVED, "");
+        guaranteeListenerManager.new CompletedNodeRemovedJobListener().dataChanged(null, new TreeCacheEvent(TreeCacheEvent.Type.NODE_REMOVED,
+                new ChildData("/test_job/guarantee/completed", null, "".getBytes())), "/test_job/guarantee/completed");
         verify(distributeOnceElasticJobListener).notifyWaitingTaskComplete();
     }
 }

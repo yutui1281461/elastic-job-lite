@@ -23,6 +23,7 @@ import com.dangdang.ddframe.job.context.TaskContext;
 import com.netflix.fenzo.TaskRequest;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
@@ -32,9 +33,8 @@ import static org.junit.Assert.assertThat;
 
 public final class JobTaskRequestTest {
     
-    private final JobTaskRequest jobTaskRequest = 
-            new JobTaskRequest(new TaskContext("test_job", Collections.singletonList(0), ExecutionType
-                    .READY, "unassigned-slave"), CloudJobConfigurationBuilder.createCloudJobConfiguration("test_job"));
+    private JobTaskRequest jobTaskRequest = 
+            new JobTaskRequest(new TaskContext("test_job", Arrays.asList(0), ExecutionType.READY, "unassigned-slave"), CloudJobConfigurationBuilder.createCloudJobConfiguration("test_job"));
     
     @Test
     public void assertGetId() {
@@ -78,8 +78,7 @@ public final class JobTaskRequestTest {
     
     @Test
     public void assertGetHardConstraints() {
-        AppConstraintEvaluator.init(null);
-        assertThat(jobTaskRequest.getHardConstraints().size(), is(1));
+        assertNull(jobTaskRequest.getHardConstraints());
     }
     
     @Test

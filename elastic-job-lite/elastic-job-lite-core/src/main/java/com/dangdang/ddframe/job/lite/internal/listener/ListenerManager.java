@@ -18,15 +18,13 @@
 package com.dangdang.ddframe.job.lite.internal.listener;
 
 import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
-import com.dangdang.ddframe.job.lite.internal.config.RescheduleListenerManager;
+import com.dangdang.ddframe.job.lite.internal.config.ConfigurationListenerManager;
 import com.dangdang.ddframe.job.lite.internal.election.ElectionListenerManager;
+import com.dangdang.ddframe.job.lite.internal.execution.ExecutionListenerManager;
 import com.dangdang.ddframe.job.lite.internal.failover.FailoverListenerManager;
 import com.dangdang.ddframe.job.lite.internal.guarantee.GuaranteeListenerManager;
-import com.dangdang.ddframe.job.lite.internal.instance.ShutdownListenerManager;
-import com.dangdang.ddframe.job.lite.internal.instance.TriggerListenerManager;
-import com.dangdang.ddframe.job.lite.internal.sharding.MonitorExecutionListenerManager;
+import com.dangdang.ddframe.job.lite.internal.server.JobOperationListenerManager;
 import com.dangdang.ddframe.job.lite.internal.sharding.ShardingListenerManager;
-import com.dangdang.ddframe.job.lite.internal.storage.JobNodeStorage;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 
 import java.util.List;
@@ -36,39 +34,30 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-public final class ListenerManager {
-    
-    private final JobNodeStorage jobNodeStorage;
+public class ListenerManager {
     
     private final ElectionListenerManager electionListenerManager;
     
     private final ShardingListenerManager shardingListenerManager;
     
+    private final ExecutionListenerManager executionListenerManager;
+    
     private final FailoverListenerManager failoverListenerManager;
     
-    private final MonitorExecutionListenerManager monitorExecutionListenerManager;
+    private final JobOperationListenerManager jobOperationListenerManager;
     
-    private final ShutdownListenerManager shutdownListenerManager;
-    
-    private final TriggerListenerManager triggerListenerManager;
-    
-    private final RescheduleListenerManager rescheduleListenerManager;
+    private final ConfigurationListenerManager configurationListenerManager;
 
     private final GuaranteeListenerManager guaranteeListenerManager;
     
-    private final RegistryCenterConnectionStateListener regCenterConnectionStateListener;
-    
     public ListenerManager(final CoordinatorRegistryCenter regCenter, final String jobName, final List<ElasticJobListener> elasticJobListeners) {
-        jobNodeStorage = new JobNodeStorage(regCenter, jobName);
         electionListenerManager = new ElectionListenerManager(regCenter, jobName);
         shardingListenerManager = new ShardingListenerManager(regCenter, jobName);
+        executionListenerManager = new ExecutionListenerManager(regCenter, jobName);
         failoverListenerManager = new FailoverListenerManager(regCenter, jobName);
-        monitorExecutionListenerManager = new MonitorExecutionListenerManager(regCenter, jobName);
-        shutdownListenerManager = new ShutdownListenerManager(regCenter, jobName);
-        triggerListenerManager = new TriggerListenerManager(regCenter, jobName);
-        rescheduleListenerManager = new RescheduleListenerManager(regCenter, jobName);
+        jobOperationListenerManager = new JobOperationListenerManager(regCenter, jobName);
+        configurationListenerManager = new ConfigurationListenerManager(regCenter, jobName);
         guaranteeListenerManager = new GuaranteeListenerManager(regCenter, jobName, elasticJobListeners);
-        regCenterConnectionStateListener = new RegistryCenterConnectionStateListener(regCenter, jobName);
     }
     
     /**
@@ -77,12 +66,19 @@ public final class ListenerManager {
     public void startAllListeners() {
         electionListenerManager.start();
         shardingListenerManager.start();
+        executionListenerManager.start();
         failoverListenerManager.start();
-        monitorExecutionListenerManager.start();
-        shutdownListenerManager.start();
-        triggerListenerManager.start();
-        rescheduleListenerManager.start();
+        jobOperationListenerManager.start();
+        configurationListenerManager.start();
         guaranteeListenerManager.start();
-        jobNodeStorage.addConnectionStateListener(regCenterConnectionStateListener);
+    }
+    
+    /**
+     * 设置当前分片总数.
+     * 
+     * @param currentShardingTotalCount 当前分片总数
+     */
+    public void setCurrentShardingTotalCount(final int currentShardingTotalCount) {
+        shardingListenerManager.setCurrentShardingTotalCount(currentShardingTotalCount);
     }
 }

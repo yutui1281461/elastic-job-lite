@@ -25,33 +25,16 @@ import com.dangdang.ddframe.job.lite.lifecycle.api.JobOperateAPI;
 import com.dangdang.ddframe.job.lite.lifecycle.api.JobSettingsAPI;
 import com.dangdang.ddframe.job.lite.lifecycle.api.JobStatisticsAPI;
 import com.dangdang.ddframe.job.lite.lifecycle.api.ServerStatisticsAPI;
-import com.dangdang.ddframe.job.lite.lifecycle.api.ShardingOperateAPI;
-import com.dangdang.ddframe.job.lite.lifecycle.api.ShardingStatisticsAPI;
 import com.google.common.base.Optional;
+import org.springframework.stereotype.Service;
 
-/**
- * 作业API服务实现类.
- * 
- * @author zhangliang 
- */
+@Service
 public final class JobAPIServiceImpl implements JobAPIService {
     
     @Override
     public JobSettingsAPI getJobSettingsAPI() {
         RegistryCenterConfiguration regCenterConfig = SessionRegistryCenterConfiguration.getRegistryCenterConfiguration();
         return JobAPIFactory.createJobSettingsAPI(regCenterConfig.getZkAddressList(), regCenterConfig.getNamespace(), Optional.fromNullable(regCenterConfig.getDigest()));
-    }
-    
-    @Override
-    public JobOperateAPI getJobOperatorAPI() {
-        RegistryCenterConfiguration regCenterConfig = SessionRegistryCenterConfiguration.getRegistryCenterConfiguration();
-        return JobAPIFactory.createJobOperateAPI(regCenterConfig.getZkAddressList(), regCenterConfig.getNamespace(), Optional.fromNullable(regCenterConfig.getDigest()));
-    }
-    
-    @Override
-    public ShardingOperateAPI getShardingOperateAPI() {
-        RegistryCenterConfiguration regCenterConfig = SessionRegistryCenterConfiguration.getRegistryCenterConfiguration();
-        return JobAPIFactory.createShardingOperateAPI(regCenterConfig.getZkAddressList(), regCenterConfig.getNamespace(), Optional.fromNullable(regCenterConfig.getDigest()));
     }
     
     @Override
@@ -67,9 +50,8 @@ public final class JobAPIServiceImpl implements JobAPIService {
     }
     
     @Override
-    public ShardingStatisticsAPI getShardingStatisticsAPI() {
+    public JobOperateAPI getJobOperatorAPI() {
         RegistryCenterConfiguration regCenterConfig = SessionRegistryCenterConfiguration.getRegistryCenterConfiguration();
-        return JobAPIFactory.createShardingStatisticsAPI(regCenterConfig.getZkAddressList(), regCenterConfig.getNamespace(), Optional.fromNullable(regCenterConfig.getDigest()));
+        return JobAPIFactory.createJobOperateAPI(regCenterConfig.getZkAddressList(), regCenterConfig.getNamespace(), Optional.fromNullable(regCenterConfig.getDigest()));
     }
-    
 }

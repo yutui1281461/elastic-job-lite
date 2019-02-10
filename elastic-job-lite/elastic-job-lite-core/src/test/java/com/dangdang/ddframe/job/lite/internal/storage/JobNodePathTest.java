@@ -42,17 +42,22 @@ public final class JobNodePathTest {
     }
     
     @Test
-    public void assertGetShardingNodePath() {
-        assertThat(jobNodePath.getShardingNodePath(), is("/test_job/sharding"));
+    public void assertGetServerNodePathForServerIpAndNameNode() {
+        assertThat(jobNodePath.getServerNodePath("ip0", "node"), is("/test_job/servers/ip0/node"));
     }
     
     @Test
-    public void assertGetShardingNodePathWihItemAndNode() {
-        assertThat(jobNodePath.getShardingNodePath("0", "running"), is("/test_job/sharding/0/running"));
+    public void assertGetExecutionNodePath() {
+        assertThat(jobNodePath.getExecutionNodePath(), is("/test_job/execution"));
+    }
+    
+    @Test
+    public void assertGetExecutionNodePathWihItemAndNode() {
+        assertThat(jobNodePath.getExecutionNodePath("0", "running"), is("/test_job/execution/0/running"));
     }
     
     @Test
     public void assertGetLeaderIpNodePath() {
-        assertThat(jobNodePath.getLeaderHostNodePath(), is("/test_job/leader/election/instance"));
+        assertThat(jobNodePath.getLeaderHostNodePath(), is("/test_job/leader/election/host"));
     }
 }

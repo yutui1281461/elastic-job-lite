@@ -32,7 +32,7 @@ import java.util.List;
  * @author caohao
  */
 @RequiredArgsConstructor
-public final class CloudAppConfigurationService {
+public class CloudAppConfigurationService {
     
     private final CoordinatorRegistryCenter regCenter;
     
@@ -83,6 +83,7 @@ public final class CloudAppConfigurationService {
         }
         return result;
     }
+    
     
     /**
      * 删除云作业App配置.

@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LiteJobConfiguration implements JobRootConfiguration {
+public class LiteJobConfiguration implements JobRootConfiguration {
     
     private final JobTypeConfiguration typeConfig;
     
@@ -44,11 +44,11 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
     
     private final String jobShardingStrategyClass;
     
-    private final int reconcileIntervalMinutes;
-    
     private final boolean disabled;
     
     private final boolean overwrite;
+    
+    private final int reconcileIntervalMinutes;
     
     /**
      * 获取作业名称.
@@ -65,7 +65,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
      * @return 是否开启失效转移
      */
     public boolean isFailover() {
-        return typeConfig.getCoreConfig().isFailover();
+        return monitorExecution && typeConfig.getCoreConfig().isFailover();
     }
     
     /**
@@ -82,7 +82,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
     public static class Builder {
         
         private final JobTypeConfiguration jobConfig;
-    
+        
         private boolean monitorExecution = true;
         
         private int maxTimeDiffSeconds = -1;
@@ -95,8 +95,8 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
         
         private boolean overwrite;
         
-        private int reconcileIntervalMinutes = 10;
-    
+        private int reconcileIntervalMinutes = -1;
+        
         /**
          * 设置监控作业执行时状态.
          *
@@ -150,7 +150,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
          * 默认使用{@code com.dangdang.ddframe.job.plugin.sharding.strategy.AverageAllocationJobShardingStrategy}.
          * </p>
          *
-         * @param jobShardingStrategyClass 作业分片策略实现类全路径
+         * @param jobShardingStrategyClass 作业辅助监控端口
          *
          * @return 作业配置构建器
          */
@@ -160,31 +160,15 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             }
             return this;
         }
-    
-        /**
-         * 设置修复作业服务器不一致状态服务执行间隔分钟数.
-         *
-         * <p>
-         * 每隔一段时间监视作业服务器的状态，如果不正确则重新分片.
-         * </p>
-         *
-         * @param reconcileIntervalMinutes 修复作业服务器不一致状态服务执行间隔分钟数
-         *
-         * @return 作业配置构建器
-         */
-        public Builder reconcileIntervalMinutes(final int reconcileIntervalMinutes) {
-            this.reconcileIntervalMinutes = reconcileIntervalMinutes;
-            return this;
-        }
         
         /**
-         * 设置作业是否启动时禁止.
+         * 设置作业是否禁止启动.
          * 
          * <p>
-         * 可用于部署作业时, 先在启动时禁止, 部署结束后统一启动.
+         * 可用于部署作业时, 先禁止启动, 部署结束后统一启动.
          * </p>
          *
-         * @param disabled 作业是否启动时禁止
+         * @param disabled 作业是否禁止启动
          *
          * @return 作业配置构建器
          */
@@ -210,12 +194,28 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
         }
         
         /**
+         * 设置修复作业服务器不一致状态服务执行间隔分钟数.
+         * 
+         * <p>
+         * 每隔一段时间监视作业服务器的状态，如果不正确则重新分片。
+         * </p>
+         * 
+         * @param reconcileIntervalMinutes 修复作业服务器不一致状态服务执行间隔分钟数
+         * 
+         * @return 作业配置构建器
+         */
+        public Builder reconcileIntervalMinutes(final int reconcileIntervalMinutes) {
+            this.reconcileIntervalMinutes = reconcileIntervalMinutes;
+            return this;
+        }
+        
+        /**
          * 构建作业配置对象.
          * 
          * @return 作业配置对象
          */
         public final LiteJobConfiguration build() {
-            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, reconcileIntervalMinutes, disabled, overwrite);
+            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, disabled, overwrite, reconcileIntervalMinutes);
         }
     }
 }

@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.job.statistics.type.task;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Date;
 
 /**
  * 运行中的任务统计数据.
@@ -31,7 +31,7 @@ import java.util.Date;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public final class TaskRunningStatistics {
+public class TaskRunningStatistics {
     
     private long id;
     

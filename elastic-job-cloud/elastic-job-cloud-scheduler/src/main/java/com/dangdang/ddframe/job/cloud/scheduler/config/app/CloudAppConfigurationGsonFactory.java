@@ -26,14 +26,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 
-import static com.dangdang.ddframe.job.cloud.scheduler.config.constants.CloudConfigurationConstants.APP_CACHE_ENABLE;
-import static com.dangdang.ddframe.job.cloud.scheduler.config.constants.CloudConfigurationConstants.APP_NAME;
-import static com.dangdang.ddframe.job.cloud.scheduler.config.constants.CloudConfigurationConstants.APP_URL;
-import static com.dangdang.ddframe.job.cloud.scheduler.config.constants.CloudConfigurationConstants.BOOTSTRAP_SCRIPT;
-import static com.dangdang.ddframe.job.cloud.scheduler.config.constants.CloudConfigurationConstants.CPU_COUNT;
-import static com.dangdang.ddframe.job.cloud.scheduler.config.constants.CloudConfigurationConstants.EVENT_TRACE_SAMPLING_COUNT;
-import static com.dangdang.ddframe.job.cloud.scheduler.config.constants.CloudConfigurationConstants.MEMORY_MB;
-
 /**
  * 云作业App配置的Gson工厂.
  *
@@ -86,25 +78,25 @@ public final class CloudAppConfigurationGsonFactory {
             while (in.hasNext()) {
                 String jsonName = in.nextName();
                 switch (jsonName) {
-                    case APP_NAME:
+                    case "appName":
                         appName = in.nextString();
                         break;
-                    case APP_URL:
+                    case "appURL":
                         appURL = in.nextString();
                         break;
-                    case BOOTSTRAP_SCRIPT:
+                    case "bootstrapScript":
                         bootstrapScript = in.nextString();
                         break;
-                    case CPU_COUNT:
+                    case "cpuCount":
                         cpuCount = in.nextDouble();
                         break;
-                    case MEMORY_MB:
+                    case "memoryMB":
                         memoryMB = in.nextDouble();
                         break;
-                    case APP_CACHE_ENABLE:
+                    case "appCacheEnable":
                         appCacheEnable = in.nextBoolean();
                         break;
-                    case EVENT_TRACE_SAMPLING_COUNT:
+                    case "eventTraceSamplingCount":
                         eventTraceSamplingCount = in.nextInt();
                         break;
                     default:
@@ -118,14 +110,15 @@ public final class CloudAppConfigurationGsonFactory {
         @Override
         public void write(final JsonWriter out, final CloudAppConfiguration value) throws IOException {
             out.beginObject();
-            out.name(APP_NAME).value(value.getAppName());
-            out.name(APP_URL).value(value.getAppURL());
-            out.name(BOOTSTRAP_SCRIPT).value(value.getBootstrapScript());
-            out.name(CPU_COUNT).value(value.getCpuCount());
-            out.name(MEMORY_MB).value(value.getMemoryMB());
-            out.name(APP_CACHE_ENABLE).value(value.isAppCacheEnable());
-            out.name(EVENT_TRACE_SAMPLING_COUNT).value(value.getEventTraceSamplingCount());
+            out.name("appName").value(value.getAppName());
+            out.name("appURL").value(value.getAppURL());
+            out.name("bootstrapScript").value(value.getBootstrapScript());
+            out.name("cpuCount").value(value.getCpuCount());
+            out.name("memoryMB").value(value.getMemoryMB());
+            out.name("appCacheEnable").value(value.isAppCacheEnable());
+            out.name("eventTraceSamplingCount").value(value.getEventTraceSamplingCount());
             out.endObject();
         }
+    
     }
 }

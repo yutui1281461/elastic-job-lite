@@ -22,7 +22,7 @@ package com.dangdang.ddframe.job.exception;
  * 
  * @author zhangliang
  */
-public final class JobSystemException extends RuntimeException {
+public class JobSystemException extends RuntimeException {
     
     private static final long serialVersionUID = 5018901344199973515L;
     

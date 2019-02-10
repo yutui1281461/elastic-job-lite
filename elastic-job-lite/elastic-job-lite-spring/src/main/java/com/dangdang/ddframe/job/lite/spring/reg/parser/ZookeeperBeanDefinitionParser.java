@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * 
  * @author caohao
  */
-public final class ZookeeperBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class ZookeeperBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

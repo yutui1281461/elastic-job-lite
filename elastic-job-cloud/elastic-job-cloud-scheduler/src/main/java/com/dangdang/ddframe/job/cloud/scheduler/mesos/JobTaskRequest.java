@@ -82,7 +82,7 @@ public final class JobTaskRequest implements TaskRequest {
     
     @Override
     public List<? extends ConstraintEvaluator> getHardConstraints() {
-        return Collections.singletonList(AppConstraintEvaluator.getInstance());
+        return null;
     }
     
     @Override

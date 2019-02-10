@@ -20,7 +20,6 @@ package com.dangdang.ddframe.job.cloud.scheduler.config.job;
 import com.dangdang.ddframe.job.cloud.scheduler.producer.ProducerManager;
 import com.dangdang.ddframe.job.cloud.scheduler.state.ready.ReadyService;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -36,8 +35,7 @@ import java.util.concurrent.Executors;
  * @author zhangliang
  * @author caohao
  */
-@Slf4j
-public final class CloudJobConfigurationListener implements TreeCacheListener {
+public class CloudJobConfigurationListener implements TreeCacheListener {
     
     private final CoordinatorRegistryCenter regCenter;
     
@@ -70,7 +68,7 @@ public final class CloudJobConfigurationListener implements TreeCacheListener {
             if (!jobConfig.getTypeConfig().getCoreConfig().isMisfire()) {
                 readyService.setMisfireDisabled(jobConfig.getJobName());
             }
-            producerManager.reschedule(jobConfig.getJobName());
+            producerManager.reschedule(jobConfig);
         } else if (isJobConfigNode(event, path, Type.NODE_REMOVED)) {
             String jobName = path.substring(CloudJobConfigurationNode.ROOT.length() + 1, path.length());
             producerManager.unschedule(jobName);
@@ -86,7 +84,6 @@ public final class CloudJobConfigurationListener implements TreeCacheListener {
             return CloudJobConfigurationGsonFactory.fromJson(new String(event.getData().getData()));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            log.warn("Wrong Cloud Job Configuration with:", ex.getMessage());
             // CHECKSTYLE:ON
             return null;
         }

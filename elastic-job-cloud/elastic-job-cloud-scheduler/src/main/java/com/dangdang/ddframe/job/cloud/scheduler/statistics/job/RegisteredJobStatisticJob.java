@@ -49,7 +49,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
-public final class RegisteredJobStatisticJob extends AbstractStatisticJob {
+public class RegisteredJobStatisticJob extends AbstractStatisticJob {
     
     private CloudJobConfigurationService configurationService;
     

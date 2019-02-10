@@ -32,7 +32,7 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class CloudJobConfigurationService {
+public class CloudJobConfigurationService {
     
     private final CoordinatorRegistryCenter regCenter;
     

@@ -45,7 +45,7 @@ import java.util.Properties;
  *
  * @author caohao
  */
-final class TransientProducerScheduler {
+class TransientProducerScheduler {
     
     private final TransientProducerRepository repository;
     
@@ -112,7 +112,7 @@ final class TransientProducerScheduler {
         return TriggerBuilder.newTrigger().withIdentity(cron).withSchedule(CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing()).build();
     }
     
-    synchronized void deregister(final CloudJobConfiguration jobConfig) {
+    void deregister(final CloudJobConfiguration jobConfig) {
         repository.remove(jobConfig.getJobName());
         String cron = jobConfig.getTypeConfig().getCoreConfig().getCron();
         if (!repository.containsKey(buildJobKey(cron))) {
